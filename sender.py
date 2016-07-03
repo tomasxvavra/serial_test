@@ -1,5 +1,12 @@
 #!/usr/bin/python3
 
+'''
+This script will send random data red from file over serial port.
+It will create a 100 MB file when run for the first time.
+
+Author: Tomas Vavra <tomasxvavra@gmail.com>
+'''
+
 import serial
 import time
 import os
@@ -7,34 +14,40 @@ import threading
 import io
 import random
 
-# Generate random file
-
 kB = 1024
 MB = 1024 * 1024
 
-FILE_NAME = 'data100.bin'
-CNT = 100 * MB
+### Configuration
 
+# Serial port
+#PORT = '/dev/ttyACM0'      # If on host side
+PORT = '/dev/ttyGS0'        # If on device side
+
+FILE_NAME = 'data100.bin'   # Random data file name
+CNT = 100 * MB              # Random data file size
+
+N = int(100 * MB)           # Number of bytes to transfer at once
+PKT_SIZE = 256              # Packet size
+
+### Test
+
+# Generate random file if it does not exist
 if not os.path.isfile(FILE_NAME):
     print('Creating random file once')
     with open(FILE_NAME, 'wb') as f:
         f.write(os.urandom(CNT))
 
-N = 100 * MB
-N = int(N)
-
-PKT_SIZE = 256
-
 try:
-    s = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+    s = serial.Serial(PORT, 9600, timeout=1)
     
-    with open('data100.bin', 'rb') as f:
+    with open(FILE_NAME, 'rb') as f:
         data = io.BytesIO(f.read(N))
     
     time.sleep(0.5)
 
     if True:
-        print('Sending data100.bin')
+        # Do the transfer
+        print('Sending ' + FILE_NAME)
         print('Data length: {}'.format(N))
         t0 = time.time()
         cnt = 0
@@ -47,6 +60,7 @@ try:
             
             cnt += s.write(to_write)
             
+        # Transfer finished
         t1 = time.time()
         dt = t1 - t0
         speed = cnt/1024/1024 / dt
