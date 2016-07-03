@@ -1,7 +1,7 @@
 serial_test
 ===========
 
-This repository contains an 2 python3 scripts - _sender.py_ and _receiver.py_, which can be used to test heavy serial communication
+This repository contains 2 python3 scripts - _sender.py_ and _receiver.py_, which can be used to test heavy serial communication
 over USB serial port in single direction. 
 
 ### Context
